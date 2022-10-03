@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { readonly, reactive, DeepReadonly } from 'vue'
 import { State } from '../types/index'
 
@@ -11,13 +11,15 @@ const state = reactive<State>({
 
 export interface FireBase {
   state: DeepReadonly<typeof state>
-  signIn: (email: string, password: string) => Promise<string>
+  signInEmailAndPassword: (email: string, password: string) => Promise<string>
+  signInGoogle: () => Promise<string>
 }
 
 export const useFireBase: () => FireBase = () => {
   const auth = getAuth()
+  const provider = new GoogleAuthProvider()
 
-  const signIn = (email: string, password: string) =>
+  const signInEmailAndPassword = (email: string, password: string) =>
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         state.user.email = userCredential.user.email
@@ -37,8 +39,29 @@ export const useFireBase: () => FireBase = () => {
         }
       })
 
+  const signInGoogle = () =>
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        state.user.email = result.user.email
+        state.user.email = result.user.uid
+        return 'ok'
+      })
+      .catch((error) => {
+        switch (error.code) {
+          case 'auth/invalid-email':
+            return 'Invalid email'
+          case 'auth/user-not-found':
+            return 'No account with that email was found'
+          case 'auth/wrong-password':
+            return 'Incorrect password'
+          default:
+            return 'Email or password was incorrect'
+        }
+      })
+
   return {
     state: readonly(state),
-    signIn,
+    signInEmailAndPassword,
+    signInGoogle,
   }
 }

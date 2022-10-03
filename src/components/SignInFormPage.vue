@@ -11,9 +11,9 @@
         <input type="password" class="password-form" v-model="form.password" placeholder="Your Password" />
       </div>
       <button class="button-send-info" @click="sendInfo">Sign In</button>
-      <!--button class="button-send-info" @click="sendInfo">Sign In by Google</button>
+      <button class="button-send-info" @click="redirectToGoogleSignIn">Sign In by Google</button>
       <p v-if="errMsg" class="dark:text-white">{{ errMsg }}</p>
-      <div @click="redirectToRegister" class="text-blue-600 cursor-pointer dark:text-white">
+      <!--div @click="redirectToRegister" class="text-blue-600 cursor-pointer dark:text-white">
         Don't have an account? Register!
       </div-->
     </div>
@@ -28,7 +28,7 @@ import { useFireBase } from '../composables/useFireBase'
 export default defineComponent({
   name: 'SignInForm',
   setup() {
-    const { signIn } = useFireBase()
+    const { signInEmailAndPassword, signInGoogle } = useFireBase()
     const form = ref({
       email: '',
       password: '',
@@ -36,13 +36,24 @@ export default defineComponent({
     const errMsg = ref()
     const router = useRouter()
     const passwordFieldType = ref('password')
+
     const sendInfo = () => {
-      signIn(form.value.email, form.value.password).then((msg) => {
+      signInEmailAndPassword(form.value.email, form.value.password).then((msg) => {
         if (msg === 'ok') {
           router.push('/')
         } else errMsg.value = msg
       })
     }
+
+    const redirectToGoogleSignIn = () => {
+      signInGoogle().then((msg) => {
+        console.log(msg)
+        if (msg === 'ok') {
+          router.push('/')
+        } else errMsg.value = msg
+      })
+    }
+
     const redirectToRegister = () => {
       router.push('/register')
     }
@@ -52,6 +63,7 @@ export default defineComponent({
       errMsg,
       passwordFieldType,
       redirectToRegister,
+      redirectToGoogleSignIn,
     }
   },
 })
