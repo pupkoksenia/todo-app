@@ -13,7 +13,7 @@ module.exports = {
     ecmaVersion: 2020,
   },
   rules: {
-    'no-console': 0,
+    'no-console': 2,
     'no-debugger': 2,
     'prettier/prettier': [
       'error',

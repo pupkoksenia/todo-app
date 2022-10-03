@@ -47,7 +47,6 @@ export default defineComponent({
 
     const redirectToGoogleSignIn = () => {
       signInGoogle().then((msg) => {
-        console.log(msg)
         if (msg === 'ok') {
           router.push('/')
         } else errMsg.value = msg
