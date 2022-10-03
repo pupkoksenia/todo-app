@@ -7,6 +7,19 @@ const routes: Array<RouteRecordRaw> = [
     name: 'home',
     component: HomeView,
   },
+  {
+    path: '/authentification',
+    children: [
+      {
+        path: '/sign-in',
+        component: () => import('../components/SignInFormPage.vue'),
+      },
+      {
+        path: '/register',
+        component: () => import('../components/RegisterFormPage.vue'),
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
