@@ -4,6 +4,7 @@ import router from "./router";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { createFirebaseConfig } from "../src/components/composables/createFireBaseConfig";
+import "./assets/app.css";
 
 createApp(App).use(router).mount("#app");
 
