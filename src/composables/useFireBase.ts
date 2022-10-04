@@ -122,7 +122,7 @@ export const useFireBase: () => FireBase = () => {
         } else resolve(state.user.isSignIn)
       })
     }).then((result) => {
-      if (result) return { path: '/home' }
+      if (result) return { path: '/' }
       else return { path: '/sign-in' }
     })
 
