@@ -1,5 +1,5 @@
 <template>
-  <div class="view-sign-in-register">
+  <div class="view-auth">
     <div class="view-form">
       <h1 class="text-center text-3xl">To-do app</h1>
       <div class="flex flex-col space-y-2">
@@ -18,8 +18,8 @@
         <label class="text-sm font-light" for="surname">Surname</label>
         <input type="text" class="email-form" v-model="form.surname" placeholder="Your Surname" />
       </div>
-      <button class="button-send-info" @click="sendEmailAndPasswordOnFirebase">Register</button>
-      <button class="button-send-info" @click="redirectToGoogleRegister">Register by Google</button>
+      <button class="button-auth" @click="sendEmailAndPasswordOnFirebase">Register</button>
+      <button class="button-auth" @click="redirectToGoogleRegister">Register by Google</button>
       <p v-if="errMsg">{{ errMsg }}</p>
       <div @click="redirectToSignIn" class="text-blue-600 cursor-pointer">Already have an account? Sign-in!</div>
     </div>

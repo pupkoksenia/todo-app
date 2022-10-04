@@ -1,5 +1,5 @@
 <template>
-  <div class="view-sign-in-register">
+  <div class="view-auth">
     <div class="view-form">
       <h1 class="text-center text-3xl">To-do app</h1>
       <div class="flex flex-col space-y-2">
@@ -10,8 +10,8 @@
         <label class="text-sm font-light" for="password">Password</label>
         <input type="password" class="password-form" v-model="form.password" placeholder="Your Password" />
       </div>
-      <button class="button-send-info" @click="sendEmailAndPasswordOnFirebase">Sign In</button>
-      <button class="button-send-info" @click="redirectToGoogleSignIn">Sign in by Google</button>
+      <button class="button-auth" @click="sendEmailAndPasswordOnFirebase">Sign In</button>
+      <button class="button-auth" @click="redirectToGoogleSignIn">Sign in by Google</button>
       <p v-if="errMsg">{{ errMsg }}</p>
       <div @click="redirectToRegister" class="text-blue-600 cursor-pointer">Don't have an account? Register!</div>
     </div>

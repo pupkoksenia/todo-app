@@ -1,6 +1,5 @@
 <template>
-  <div v-if="isLoading === true" class="lds-dual-ring"></div>
-  <div v-else class="hidden"></div>
+  <div v-show="isLoading" class="loader-ring"></div>
 </template>
 
 <script lang="ts">
@@ -10,20 +9,17 @@ export default defineComponent({
   props: {
     isLoading: Boolean,
   },
-  setup(props) {
-    return props.isLoading
-  },
 })
 </script>
 
 <style>
-.lds-dual-ring {
+.loader-ring {
   margin-left: 45%;
   margin-top: 15%;
   width: 100wv;
   height: 100hv;
 }
-.lds-dual-ring:after {
+.loader-ring:after {
   content: '';
   display: block;
   width: 64px;
@@ -32,9 +28,9 @@ export default defineComponent({
   border-radius: 50%;
   border: 6px solid #6366f1;
   border-color: #6366f1 transparent #6366f1 transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
+  animation: loader-ring 1.2s linear infinite;
 }
-@keyframes lds-dual-ring {
+@keyframes loader-ring {
   0% {
     transform: rotate(0deg);
   }

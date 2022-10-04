@@ -41,7 +41,7 @@ router.beforeEach((to, from, next) => {
   const requireAuth = to.matched.some((record) => record.meta.auth)
   const { state } = useFireBase()
 
-  if (requireAuth && state.user.email === '') next({ path: '/sign-in' })
+  if (requireAuth && !state.user.isAuth) next({ path: '/sign-in' })
   else next()
 })
 

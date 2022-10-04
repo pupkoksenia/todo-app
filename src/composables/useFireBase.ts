@@ -10,13 +10,22 @@ import {
 import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore'
 import { db } from '../main'
 import { readonly, reactive, DeepReadonly } from 'vue'
-import { State } from '../types/index'
+
+export interface State {
+  user: {
+    email: string | null
+    uid: string
+    isAuth: boolean
+    name: string
+    surname: string
+  }
+}
 
 const state = reactive<State>({
   user: {
     email: '',
     uid: '',
-    isSignIn: false,
+    isAuth: false,
     name: '',
     surname: '',
   },
@@ -32,7 +41,7 @@ export interface FireBase {
     userName: string,
     userSurname: string
   ) => Promise<string | undefined>
-  checkIsSignIn: () => Promise<{
+  checkIsAuth: () => Promise<{
     path: string
   }>
   getNameAndSurname: (id: string) => void
@@ -49,7 +58,7 @@ export const useFireBase: () => FireBase = () => {
       .then((userCredential) => {
         state.user.email = userCredential.user.email
         state.user.uid = userCredential.user.uid
-        state.user.isSignIn = true
+        state.user.isAuth = true
         getNameAndSurname(state.user.uid)
         return 'ok'
       })
@@ -71,7 +80,7 @@ export const useFireBase: () => FireBase = () => {
       .then((result) => {
         state.user.email = result.user.email
         state.user.uid = result.user.uid
-        state.user.isSignIn = true
+        state.user.isAuth = true
         getNameAndSurname(state.user.uid)
         return 'ok'
       })
@@ -93,7 +102,7 @@ export const useFireBase: () => FireBase = () => {
       .then((userCredential) => {
         state.user.email = userCredential.user.email
         state.user.uid = userCredential.user.uid
-        state.user.isSignIn = true
+        state.user.isAuth = true
         state.user.name = userName
         state.user.surname = userSurname
 
@@ -125,7 +134,7 @@ export const useFireBase: () => FireBase = () => {
       .then((result) => {
         state.user.email = result.user.email
         state.user.uid = result.user.uid
-        state.user.isSignIn = true
+        state.user.isAuth = true
 
         if (result.user.displayName) {
           const arrayOfNameandSurname = result.user.displayName?.split(' ')
@@ -162,21 +171,26 @@ export const useFireBase: () => FireBase = () => {
         }
       })
 
-  const checkIsSignIn = () =>
-    new Promise((resolve) => {
+  const checkIsAuth = () =>
+    new Promise((resolve, reject) => {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           state.user.email = user.email
           state.user.uid = user.uid
-          state.user.isSignIn = true
+          state.user.isAuth = true
           getNameAndSurname(state.user.uid)
-          resolve(state.user.isSignIn)
-        } else resolve(state.user.isSignIn)
+          resolve(state.user.isAuth)
+        } else resolve(state.user.isAuth)
       })
-    }).then((result) => {
-      if (result) return { path: '/' }
-      else return { path: '/sign-in' }
+      reject()
     })
+      .then((result) => {
+        if (result) return { path: '/' }
+        else return { path: '/sign-in' }
+      })
+      .catch(() => {
+        return { path: '/sign-in' }
+      })
 
   const getNameAndSurname = (id: string) => {
     getDoc(doc(db, 'users', id)).then((data) => {
@@ -191,7 +205,7 @@ export const useFireBase: () => FireBase = () => {
     signOut(auth).then(() => {
       state.user.email = ''
       state.user.uid = ''
-      state.user.isSignIn = false
+      state.user.isAuth = false
       state.user.name = ''
       state.user.surname = ''
     })
@@ -202,7 +216,7 @@ export const useFireBase: () => FireBase = () => {
     signInEmailAndPasswordFirebase,
     signInGoogleFirebase,
     registerEmailAndPasswordFirebase,
-    checkIsSignIn,
+    checkIsAuth,
     getNameAndSurname,
     signOutFirebase,
     registerGoogleFirebase,
