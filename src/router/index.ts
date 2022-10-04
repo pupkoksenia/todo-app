@@ -6,6 +6,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'home',
     component: HomeView,
+    children: [{ path: '/board/:id', component: () => import('../components/NotFoundPage.vue') }],
   },
   {
     path: '/loader',
@@ -23,6 +24,10 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../components/RegisterFormPage.vue'),
       },
     ],
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('../components/NotFoundPage.vue'),
   },
 ]
 
