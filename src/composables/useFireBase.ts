@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signOut,
 } from 'firebase/auth'
 import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore'
 import { db } from '../main'
@@ -35,6 +36,7 @@ export interface FireBase {
     path: string
   }>
   getNameAndSurname: (id: string) => void
+  signOutFirebase: () => void
 }
 
 export const useFireBase: () => FireBase = () => {
@@ -142,6 +144,16 @@ export const useFireBase: () => FireBase = () => {
     })
   }
 
+  const signOutFirebase = () => {
+    signOut(auth).then(() => {
+      state.user.email = ''
+      state.user.uid = ''
+      state.user.isSignIn = false
+      state.user.name = ''
+      state.user.surname = ''
+    })
+  }
+
   return {
     state: readonly(state),
     signInEmailAndPasswordFirebase,
@@ -149,5 +161,6 @@ export const useFireBase: () => FireBase = () => {
     registerEmailAndPassword,
     checkIsSignIn,
     getNameAndSurname,
+    signOutFirebase,
   }
 }
