@@ -7,7 +7,7 @@
       Log Out
     </button>
     <div class="col-span-1 flex items-center justify-items-center">
-      <img src="../../assets/man.png" class="h-8 mx-4" />
+      <img src="../../assets/profile.jpg" class="h-8 w-8" />
     </div>
   </div>
 </template>
