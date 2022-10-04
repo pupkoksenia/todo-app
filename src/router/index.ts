@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useFireBase } from '../composables/useFireBase'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
     component: HomeView,
-    children: [{ path: '/board/:id', component: () => import('../components/NotFoundPage.vue') }],
+    meta: { auth: true },
   },
   {
     path: '/loader',
@@ -34,6 +35,14 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const requireAuth = to.matched.some((record) => record.meta.auth)
+  const { state } = useFireBase()
+
+  if (requireAuth && state.user.email === '') next({ path: '/sign-in' })
+  else next()
 })
 
 export default router
