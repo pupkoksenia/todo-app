@@ -3,5 +3,7 @@ export interface State {
     email: string | null
     uid: string
     isSignIn: boolean
+    name: string
+    surname: string
   }
 }
