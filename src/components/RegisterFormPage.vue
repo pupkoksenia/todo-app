@@ -1,29 +1,27 @@
 <template>
   <div class="view-sign-in-register">
     <div class="view-form">
-      <h1 class="text-center text-3xl dark:text-white">To-do app</h1>
+      <h1 class="text-center text-3xl">To-do app</h1>
       <div class="flex flex-col space-y-2">
-        <label class="text-sm font-light dark:text-white" for="email">Email</label>
+        <label class="text-sm font-light" for="email">Email</label>
         <input class="email-form" placeholder="Your Email" v-model="form.email" />
       </div>
       <div class="flex flex-col space-y-2">
-        <label class="text-sm font-light dark:text-white" for="password">Password</label>
+        <label class="text-sm font-light" for="password">Password</label>
         <input type="password" class="password-form" v-model="form.password" placeholder="Your Password" />
       </div>
       <div class="flex flex-col space-y-2">
-        <label class="text-sm font-light dark:text-white" for="name">Name</label>
+        <label class="text-sm font-light" for="name">Name</label>
         <input type="text" class="email-form" v-model="form.name" placeholder="Your Name" />
       </div>
       <div class="flex flex-col space-y-2">
-        <label class="text-sm font-light dark:text-white" for="surname">Surname</label>
+        <label class="text-sm font-light" for="surname">Surname</label>
         <input type="text" class="email-form" v-model="form.surname" placeholder="Your Surname" />
       </div>
       <button class="button-send-info" @click="sendEmailAndPasswordOnFirebase">Register</button>
       <button class="button-send-info" @click="redirectToGoogleRegister">Register by Google</button>
-      <p v-if="errMsg" class="dark:text-white">{{ errMsg }}</p>
-      <div @click="redirectToSignIn" class="text-blue-600 cursor-pointer dark:text-white">
-        Already have an account? Sign-in!
-      </div>
+      <p v-if="errMsg">{{ errMsg }}</p>
+      <div @click="redirectToSignIn" class="text-blue-600 cursor-pointer">Already have an account? Sign-in!</div>
     </div>
   </div>
 </template>
