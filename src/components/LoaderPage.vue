@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gradient-to-t from-purple-900 dark:to-black w-screen max-h-fit min-h-screen justify-items-center">
+  <div class="loader-page">
     <Loader :isLoading="loadingListener" />
   </div>
 </template>
