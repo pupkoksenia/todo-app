@@ -19,6 +19,7 @@
         <input type="text" class="email-form" v-model="form.surname" placeholder="Your Surname" />
       </div>
       <button class="button-send-info" @click="sendEmailAndPasswordOnFirebase">Register</button>
+      <button class="button-send-info" @click="redirectToGoogleRegister">Register by Google</button>
       <p v-if="errMsg" class="dark:text-white">{{ errMsg }}</p>
       <div @click="redirectToSignIn" class="text-blue-600 cursor-pointer dark:text-white">
         Already have an account? Sign-in!
@@ -34,7 +35,7 @@ import { useFireBase } from '../composables/useFireBase'
 export default defineComponent({
   name: 'RegisterForm',
   setup() {
-    const { registerEmailAndPassword } = useFireBase()
+    const { registerEmailAndPasswordFirebase, registerGoogleFirebase } = useFireBase()
     const form = ref({
       email: '',
       password: '',
@@ -44,7 +45,7 @@ export default defineComponent({
     const errMsg = ref()
     const router = useRouter()
     const sendEmailAndPasswordOnFirebase = () => {
-      registerEmailAndPassword(form.value.email, form.value.password, form.value.name, form.value.surname).then(
+      registerEmailAndPasswordFirebase(form.value.email, form.value.password, form.value.name, form.value.surname).then(
         (msg) => {
           if (msg === 'ok') {
             router.push({ path: '/' })
@@ -52,10 +53,17 @@ export default defineComponent({
         }
       )
     }
+    const redirectToGoogleRegister = () => {
+      registerGoogleFirebase().then((msg) => {
+        if (msg === 'ok') {
+          router.push({ path: '/' })
+        } else errMsg.value = msg
+      })
+    }
     const redirectToSignIn = () => {
       router.push('/sign-in')
     }
-    return { form, sendEmailAndPasswordOnFirebase, errMsg, redirectToSignIn }
+    return { form, sendEmailAndPasswordOnFirebase, errMsg, redirectToSignIn, redirectToGoogleRegister }
   },
 })
 </script>

@@ -26,7 +26,7 @@ export interface FireBase {
   state: DeepReadonly<typeof state>
   signInEmailAndPasswordFirebase: (email: string, password: string) => Promise<string>
   signInGoogleFirebase: () => Promise<string>
-  registerEmailAndPassword: (
+  registerEmailAndPasswordFirebase: (
     email: string,
     password: string,
     userName: string,
@@ -37,6 +37,7 @@ export interface FireBase {
   }>
   getNameAndSurname: (id: string) => void
   signOutFirebase: () => void
+  registerGoogleFirebase: () => Promise<string>
 }
 
 export const useFireBase: () => FireBase = () => {
@@ -87,7 +88,7 @@ export const useFireBase: () => FireBase = () => {
         }
       })
 
-  const registerEmailAndPassword = (email: string, password: string, userName: string, userSurname: string) =>
+  const registerEmailAndPasswordFirebase = (email: string, password: string, userName: string, userSurname: string) =>
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         state.user.email = userCredential.user.email
@@ -116,6 +117,48 @@ export const useFireBase: () => FireBase = () => {
         switch (error.code) {
           case 'auth/invalid-email':
             return 'Invalid email'
+        }
+      })
+
+  const registerGoogleFirebase = () =>
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        state.user.email = result.user.email
+        state.user.uid = result.user.uid
+        state.user.isSignIn = true
+
+        if (result.user.displayName) {
+          const arrayOfNameandSurname = result.user.displayName?.split(' ')
+          state.user.name = arrayOfNameandSurname[0]
+          state.user.surname = arrayOfNameandSurname[1]
+        }
+
+        const id = result.user.uid
+
+        getDocs(collection(db, 'users')).then(() => {
+          setDoc(
+            doc(db, 'users', id),
+            {
+              email: result.user.email,
+              role: 'admin',
+              name: state.user.name,
+              surname: state.user.surname,
+            },
+            { merge: true }
+          )
+        })
+        return 'ok'
+      })
+      .catch((error) => {
+        switch (error.code) {
+          case 'auth/invalid-email':
+            return 'Invalid email'
+          case 'auth/user-not-found':
+            return 'No account with that email was found'
+          case 'auth/wrong-password':
+            return 'Incorrect password'
+          default:
+            return 'Email or password was incorrect'
         }
       })
 
@@ -158,9 +201,10 @@ export const useFireBase: () => FireBase = () => {
     state: readonly(state),
     signInEmailAndPasswordFirebase,
     signInGoogleFirebase,
-    registerEmailAndPassword,
+    registerEmailAndPasswordFirebase,
     checkIsSignIn,
     getNameAndSurname,
     signOutFirebase,
+    registerGoogleFirebase,
   }
 }
