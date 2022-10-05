@@ -180,12 +180,15 @@ export const useFireBase: () => FireBase = () => {
           state.user.isAuth = true
           getNameAndSurname(state.user.uid)
           resolve(state.user.isAuth)
-        } else resolve(state.user.isAuth)
+        } else reject(state.user.isAuth)
       })
-    }).then((result) => {
-      if (result) return { path: '/' }
-      else return { path: '/sign-in' }
     })
+      .then(() => {
+        return { path: '/' }
+      })
+      .catch(() => {
+        return { path: '/sign-in' }
+      })
 
   const getNameAndSurname = (id: string) => {
     getDoc(doc(db, 'users', id)).then((data) => {
