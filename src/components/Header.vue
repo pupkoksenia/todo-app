@@ -3,8 +3,8 @@
     <div class="col-span-1 justify-items-end"></div>
     <div class="flex items-center justify-start col-span-3 text-black font-bold">To-do app</div>
 
-    <button class="flex items-center justify-center col-span-2 text-sky-500 font-medium" @click="logOut">
-      Log Out
+    <button class="flex items-center justify-center col-span-2 text-sky-500 font-medium" @click="handleSignOut">
+      Sign Out
     </button>
     <div class="col-span-1 flex items-center justify-items-center">
       <img src="../assets/profile.jpg" class="h-8 w-8" @click="openModalWindow" />
@@ -32,11 +32,11 @@ export default defineComponent({
     ModalWindow,
   },
   setup() {
-    const { logOutFirebase, state } = useFireBase()
+    const { signOutFirebase, state } = useFireBase()
     const router = useRouter()
     const modalWindowIsOpen = ref()
-    const logOut = () => {
-      logOutFirebase()
+    const handleSignOut = () => {
+      signOutFirebase()
       router.push({ path: '/sign-in' })
     }
     onMounted(() => (modalWindowIsOpen.value = false))
@@ -46,7 +46,7 @@ export default defineComponent({
     const closeModalWindow = () => {
       modalWindowIsOpen.value = false
     }
-    return { logOut, openModalWindow, modalWindowIsOpen, closeModalWindow, state }
+    return { handleSignOut, openModalWindow, modalWindowIsOpen, closeModalWindow, state }
   },
 })
 </script>

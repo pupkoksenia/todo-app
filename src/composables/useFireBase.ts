@@ -51,7 +51,7 @@ export interface FireBase {
     path: string
   }>
   getNameAndSurname: (id: string) => void
-  logOutFirebase: () => void
+  signOutFirebase: () => void
   registerGoogleFirebase: () => Promise<string>
 }
 
@@ -210,7 +210,7 @@ export const useFireBase: () => FireBase = () => {
     })
   }
 
-  const logOutFirebase = () => {
+  const signOutFirebase = () => {
     signOut(auth).then(() => {
       state.user.email = ''
       state.user.uid = ''
@@ -227,7 +227,7 @@ export const useFireBase: () => FireBase = () => {
     registerEmailAndPasswordFirebase,
     checkIsAuth,
     getNameAndSurname,
-    logOutFirebase,
+    signOutFirebase,
     registerGoogleFirebase,
   }
 }
