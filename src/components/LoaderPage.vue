@@ -5,19 +5,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 import Loader from './staff/Loader.vue'
 export default defineComponent({
   name: 'FeedUsers',
+  components: { Loader },
   setup() {
-    const loadingListener = ref()
-    onMounted(() => {
-      loadingListener.value = true
-    })
+    const loadingListener = true
     return {
       loadingListener,
     }
   },
-  components: { Loader },
 })
 </script>
