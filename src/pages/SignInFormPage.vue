@@ -24,7 +24,7 @@ import { useRouter } from 'vue-router'
 import { useFireBase } from '../composables/useFireBase'
 import { AUTH_SUCCESS } from '../constants/index'
 export default defineComponent({
-  name: 'SignInForm',
+  name: 'SignInPage',
   setup() {
     const { signInEmailAndPasswordFirebase, signInGoogleFirebase } = useFireBase()
     const form = ref({

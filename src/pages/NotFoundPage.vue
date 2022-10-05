@@ -16,7 +16,7 @@ import { defineComponent } from 'vue'
 import { useFireBase } from '../composables/useFireBase'
 import { useRouter } from 'vue-router'
 export default defineComponent({
-  name: 'NotFound',
+  name: 'NotFoundPage',
   setup() {
     const router = useRouter()
     const { state } = useFireBase()

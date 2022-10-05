@@ -32,7 +32,7 @@ import { useRouter } from 'vue-router'
 import { useFireBase } from '../composables/useFireBase'
 import { AUTH_SUCCESS } from '../constants/index'
 export default defineComponent({
-  name: 'RegisterForm',
+  name: 'RegisterPage',
   setup() {
     const { registerEmailAndPasswordFirebase, registerGoogleFirebase } = useFireBase()
     const form = ref({

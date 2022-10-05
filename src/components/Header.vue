@@ -12,9 +12,9 @@
     <ModalWindow :isOpen="modalWindowIsOpen" @closeModalWindow="closeModalWindow">
       <template #body>
         <div class="grid-cols-1 grid-rows-2">
-          <div class="text-sm dark:text-white">Email: {{ state.user.email }}</div>
-          <div class="text-sm dark:text-white">Name: {{ state.user.name }}</div>
-          <div class="text-sm dark:text-white">Surname: {{ state.user.surname }}</div>
+          <div class="text-sm">Email: {{ state.user.email }}</div>
+          <div class="text-sm">Name: {{ state.user.name }}</div>
+          <div class="text-sm">Surname: {{ state.user.surname }}</div>
         </div>
       </template>
     </ModalWindow>
@@ -27,16 +27,16 @@ import { useFireBase } from '@/composables/useFireBase'
 import { useRouter } from 'vue-router'
 import ModalWindow from './ModalWindow.vue'
 export default defineComponent({
-  name: 'HeaderPage',
+  name: 'HeaderElement',
   components: {
     ModalWindow,
   },
   setup() {
-    const { signOutFirebase, state } = useFireBase()
+    const { LogOutFirebase, state } = useFireBase()
     const router = useRouter()
     const modalWindowIsOpen = ref()
     const logOut = () => {
-      signOutFirebase()
+      LogOutFirebase()
       router.push({ path: '/sign-in' })
     }
     onMounted(() => (modalWindowIsOpen.value = false))
