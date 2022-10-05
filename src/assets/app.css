@@ -24,4 +24,13 @@
     .loader-ring {
         @apply flex items-center justify-center h-screen w-screen after:block after:w-16 after:h-16 after:m-2 after:rounded-3xl after:border-4 after:border-cyan-600 after:animate-spin;
     }
+    .modal-window-template {
+        @apply h-screen fixed inset-0 flex items-center justify-center bg-indigo-200 bg-opacity-30;
+    }
+    .modal-window {
+        @apply max-w-2xl p-6 m-20 bg-white rounded-md shadow-xl bg-white dark:bg-purple-900;
+    }
+    .modal-window-flex-items {
+        @apply flex items-center justify-between;
+    }
 } ;

@@ -5,25 +5,49 @@
 
     <button class="flex items-center justify-center col-span-2 text-cyan-700 font-bold" @click="logOut">Log Out</button>
     <div class="col-span-1 flex items-center justify-items-center">
-      <img src="../../assets/profile.jpg" class="h-8 w-8" />
+      <img src="../../assets/profile.jpg" class="h-8 w-8" @click="openModalWindow" />
     </div>
+    <ModalWindow
+      :isOpenModalWindow="isOpenModalWindow"
+      @isOpenModalWindow="(isOpened) => setOpenModalWindowValue(isOpened)"
+    >
+      <template #body>
+        <div class="grid-cols-1 grid-rows-2">
+          <div class="text-sm dark:text-white">Email: {{ state.user.email }}</div>
+          <div class="text-sm dark:text-white">Name: {{ state.user.name }}</div>
+          <div class="text-sm dark:text-white">Surname: {{ state.user.surname }}</div>
+        </div>
+      </template>
+    </ModalWindow>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { useFireBase } from '@/composables/useFireBase'
 import { useRouter } from 'vue-router'
+import ModalWindow from '../staff/ModalWindow.vue'
 export default defineComponent({
   name: 'HeaderPart',
+  components: {
+    ModalWindow,
+  },
   setup() {
-    const { signOutFirebase } = useFireBase()
+    const { signOutFirebase, state } = useFireBase()
     const router = useRouter()
+    const isOpenModalWindow = ref()
     const logOut = () => {
       signOutFirebase()
       router.push({ path: '/sign-in' })
     }
-    return { logOut }
+    onMounted(() => (isOpenModalWindow.value = false))
+    const openModalWindow = () => {
+      isOpenModalWindow.value = true
+    }
+    const setOpenModalWindowValue = (isOpened: boolean) => {
+      isOpenModalWindow.value = isOpened
+    }
+    return { logOut, openModalWindow, isOpenModalWindow, setOpenModalWindowValue, state }
   },
 })
 </script>
