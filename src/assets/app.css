@@ -33,4 +33,13 @@
     .modal-window-flex-items {
         @apply flex items-center justify-between;
     }
+    .container-not-found-page {
+        @apply container mx-auto px-6 md:px-12 relative z-10 flex items-center py-32 xl:py-40;
+    }
+    .view-not-frond-page {
+        @apply bg-gradient-to-t from-indigo-500/75 to-white relative overflow-hidden h-screen;
+    }
+    .button-go-home-not-found-page {
+        @apply font-extrabold text-5xl text-center text-white leading-tight mt-4;
+    }
 } ;

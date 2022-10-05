@@ -18,8 +18,8 @@
         <label class="text-sm font-light" for="surname">Surname</label>
         <input type="text" class="email-form" v-model="form.surname" placeholder="Your Surname" />
       </div>
-      <button class="button-auth" @click="sendEmailAndPasswordOnFirebase">Register</button>
-      <button class="button-auth" @click="redirectToGoogleRegister">Register by Google</button>
+      <button class="button-auth" @click="registerByEmailPassword">Register</button>
+      <button class="button-auth" @click="registerByGoogleAccount">Register by Google</button>
       <p v-if="errMsg">{{ errMsg }}</p>
       <div @click="redirectToSignIn" class="text-blue-600 cursor-pointer">Already have an account? Sign-in!</div>
     </div>
@@ -30,6 +30,7 @@
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireBase } from '../composables/useFireBase'
+import { AUTH_SUCCESS } from '../constants/index'
 export default defineComponent({
   name: 'RegisterForm',
   setup() {
@@ -42,18 +43,23 @@ export default defineComponent({
     })
     const errMsg = ref()
     const router = useRouter()
-    const sendEmailAndPasswordOnFirebase = () => {
-      registerEmailAndPasswordFirebase(form.value.email, form.value.password, form.value.name, form.value.surname).then(
-        (msg) => {
-          if (msg === 'ok') {
-            router.push({ path: '/' })
-          } else errMsg.value = msg
-        }
-      )
+
+    const registerByEmailPassword = () => {
+      const payload = {
+        email: form.value.email,
+        password: form.value.password,
+        userName: form.value.name,
+        userSurname: form.value.surname,
+      }
+      registerEmailAndPasswordFirebase(payload).then((msg) => {
+        if (msg === AUTH_SUCCESS) {
+          router.push({ path: '/' })
+        } else errMsg.value = msg
+      })
     }
-    const redirectToGoogleRegister = () => {
+    const registerByGoogleAccount = () => {
       registerGoogleFirebase().then((msg) => {
-        if (msg === 'ok') {
+        if (msg === AUTH_SUCCESS) {
           router.push({ path: '/' })
         } else errMsg.value = msg
       })
@@ -61,7 +67,7 @@ export default defineComponent({
     const redirectToSignIn = () => {
       router.push('/sign-in')
     }
-    return { form, sendEmailAndPasswordOnFirebase, errMsg, redirectToSignIn, redirectToGoogleRegister }
+    return { form, registerByEmailPassword, errMsg, redirectToSignIn, registerByGoogleAccount }
   },
 })
 </script>

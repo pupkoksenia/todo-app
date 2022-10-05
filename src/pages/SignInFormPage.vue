@@ -10,8 +10,8 @@
         <label class="text-sm font-light" for="password">Password</label>
         <input type="password" class="password-form" v-model="form.password" placeholder="Your Password" />
       </div>
-      <button class="button-auth" @click="sendEmailAndPasswordOnFirebase">Sign In</button>
-      <button class="button-auth" @click="redirectToGoogleSignIn">Sign in by Google</button>
+      <button class="button-auth" @click="signInByEmailAndPassword">Sign In</button>
+      <button class="button-auth" @click="signInByGoogleAccount">Sign in by Google</button>
       <p v-if="errMsg">{{ errMsg }}</p>
       <div @click="redirectToRegister" class="text-blue-600 cursor-pointer">Don't have an account? Register!</div>
     </div>
@@ -22,7 +22,7 @@
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireBase } from '../composables/useFireBase'
-
+import { AUTH_SUCCESS } from '../constants/index'
 export default defineComponent({
   name: 'SignInForm',
   setup() {
@@ -34,17 +34,21 @@ export default defineComponent({
     const errMsg = ref()
     const router = useRouter()
 
-    const sendEmailAndPasswordOnFirebase = () => {
-      signInEmailAndPasswordFirebase(form.value.email, form.value.password).then((msg) => {
-        if (msg === 'ok') {
+    const signInByEmailAndPassword = () => {
+      const payload = {
+        email: form.value.email,
+        password: form.value.password,
+      }
+      signInEmailAndPasswordFirebase(payload).then((msg) => {
+        if (msg === AUTH_SUCCESS) {
           router.push('/')
         } else errMsg.value = msg
       })
     }
 
-    const redirectToGoogleSignIn = () => {
+    const signInByGoogleAccount = () => {
       signInGoogleFirebase().then((msg) => {
-        if (msg === 'ok') {
+        if (msg === AUTH_SUCCESS) {
           router.push('/')
         } else errMsg.value = msg
       })
@@ -55,10 +59,10 @@ export default defineComponent({
     }
     return {
       form,
-      sendEmailAndPasswordOnFirebase,
+      signInByEmailAndPassword,
       errMsg,
       redirectToRegister,
-      redirectToGoogleSignIn,
+      signInByGoogleAccount,
     }
   },
 })

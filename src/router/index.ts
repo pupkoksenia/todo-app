@@ -11,24 +11,24 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/loader',
-    component: () => import('../components/LoaderPage.vue'),
+    component: () => import('../pages/LoaderPage.vue'),
   },
   {
     path: '/authentification',
     children: [
       {
         path: '/sign-in',
-        component: () => import('../components/SignInFormPage.vue'),
+        component: () => import('../pages/SignInFormPage.vue'),
       },
       {
         path: '/register',
-        component: () => import('../components/RegisterFormPage.vue'),
+        component: () => import('../pages/RegisterFormPage.vue'),
       },
     ],
   },
   {
     path: '/:pathMatch(.*)*',
-    component: () => import('../components/NotFoundPage.vue'),
+    component: () => import('../pages/NotFoundPage.vue'),
   },
 ]
 
@@ -41,7 +41,7 @@ router.beforeEach((to, from, next) => {
   const requireAuth = to.matched.some((record) => record.meta.auth)
   const { state } = useFireBase()
 
-  if (requireAuth && !state.user.isAuth) next({ path: '/sign-in' })
+  if (requireAuth && !state.user.isAuthenticated) next({ path: '/sign-in' })
   else next()
 })
 

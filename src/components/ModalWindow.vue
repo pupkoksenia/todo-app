@@ -1,10 +1,10 @@
 <template>
   <Teleport to="#app-body">
-    <div v-show="isOpenModalWindow" class="modal-window-template" @click="$emit('isOpenModalWindow', false)">
+    <div v-show="isOpen" class="modal-window-template" @click="$emit('closeModalWindow')">
       <div class="modal-window">
         <div class="modal-window-flex-items">
           <svg
-            @click="$emit('isOpenModalWindow', false)"
+            @click="$emit('closeModalWindow')"
             xmlns="http://www.w3.org/2000/svg"
             class="w-8 h-8 text-cyan-700 cursor-pointer"
             fill="none"
@@ -36,8 +36,8 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'ModalWindow',
   props: {
-    isOpenModalWindow: Boolean,
+    isOpen: Boolean,
   },
-  emits: ['isOpenModalWindow'],
+  emits: ['closeModalWindow'],
 })
 </script>

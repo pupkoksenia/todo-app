@@ -10,12 +10,12 @@ import {
 import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore'
 import { db } from '../main'
 import { readonly, reactive, DeepReadonly } from 'vue'
-
+import { AUTH_SUCCESS } from '../constants/index'
 export interface State {
   user: {
     email: string | null
     uid: string
-    isAuth: boolean
+    isAuthenticated: boolean
     name: string
     surname: string
   }
@@ -25,7 +25,7 @@ const state = reactive<State>({
   user: {
     email: '',
     uid: '',
-    isAuth: false,
+    isAuthenticated: false,
     name: '',
     surname: '',
   },
@@ -33,14 +33,14 @@ const state = reactive<State>({
 
 export interface FireBase {
   state: DeepReadonly<typeof state>
-  signInEmailAndPasswordFirebase: (email: string, password: string) => Promise<string>
+  signInEmailAndPasswordFirebase: (payload: { email: string; password: string }) => Promise<string>
   signInGoogleFirebase: () => Promise<string>
-  registerEmailAndPasswordFirebase: (
-    email: string,
-    password: string,
-    userName: string,
+  registerEmailAndPasswordFirebase: (payload: {
+    email: string
+    password: string
+    userName: string
     userSurname: string
-  ) => Promise<string | undefined>
+  }) => Promise<string | undefined>
   checkIsAuth: () => Promise<{
     path: string
   }>
@@ -53,14 +53,14 @@ export const useFireBase: () => FireBase = () => {
   const auth = getAuth()
   const provider = new GoogleAuthProvider()
 
-  const signInEmailAndPasswordFirebase = (email: string, password: string) =>
-    signInWithEmailAndPassword(auth, email, password)
+  const signInEmailAndPasswordFirebase = (payload: { email: string; password: string }) =>
+    signInWithEmailAndPassword(auth, payload.email, payload.password)
       .then((userCredential) => {
         state.user.email = userCredential.user.email
         state.user.uid = userCredential.user.uid
-        state.user.isAuth = true
+        state.user.isAuthenticated = true
         getNameAndSurname(state.user.uid)
-        return 'ok'
+        return AUTH_SUCCESS
       })
       .catch((error) => {
         switch (error.code) {
@@ -80,9 +80,9 @@ export const useFireBase: () => FireBase = () => {
       .then((result) => {
         state.user.email = result.user.email
         state.user.uid = result.user.uid
-        state.user.isAuth = true
+        state.user.isAuthenticated = true
         getNameAndSurname(state.user.uid)
-        return 'ok'
+        return AUTH_SUCCESS
       })
       .catch((error) => {
         switch (error.code) {
@@ -97,14 +97,19 @@ export const useFireBase: () => FireBase = () => {
         }
       })
 
-  const registerEmailAndPasswordFirebase = (email: string, password: string, userName: string, userSurname: string) =>
-    createUserWithEmailAndPassword(auth, email, password)
+  const registerEmailAndPasswordFirebase = (payload: {
+    email: string
+    password: string
+    userName: string
+    userSurname: string
+  }) =>
+    createUserWithEmailAndPassword(auth, payload.email, payload.password)
       .then((userCredential) => {
         state.user.email = userCredential.user.email
         state.user.uid = userCredential.user.uid
-        state.user.isAuth = true
-        state.user.name = userName
-        state.user.surname = userSurname
+        state.user.isAuthenticated = true
+        state.user.name = payload.userName
+        state.user.surname = payload.userSurname
 
         const id = userCredential.user.uid
 
@@ -114,13 +119,13 @@ export const useFireBase: () => FireBase = () => {
             {
               email: userCredential.user.email,
               role: 'admin',
-              name: userName,
-              surname: userSurname,
+              name: payload.userName,
+              surname: payload.userSurname,
             },
             { merge: true }
           )
         })
-        return 'ok'
+        return AUTH_SUCCESS
       })
       .catch((error) => {
         switch (error.code) {
@@ -134,12 +139,12 @@ export const useFireBase: () => FireBase = () => {
       .then((result) => {
         state.user.email = result.user.email
         state.user.uid = result.user.uid
-        state.user.isAuth = true
+        state.user.isAuthenticated = true
 
         if (result.user.displayName) {
-          const arrayOfNameandSurname = result.user.displayName?.split(' ')
-          state.user.name = arrayOfNameandSurname[0]
-          state.user.surname = arrayOfNameandSurname[1]
+          const resultNameAndSurname = result.user.displayName?.split(' ')
+          state.user.name = resultNameAndSurname[0]
+          state.user.surname = resultNameAndSurname[1]
         }
 
         const id = result.user.uid
@@ -156,7 +161,7 @@ export const useFireBase: () => FireBase = () => {
             { merge: true }
           )
         })
-        return 'ok'
+        return AUTH_SUCCESS
       })
       .catch((error) => {
         switch (error.code) {
@@ -177,10 +182,10 @@ export const useFireBase: () => FireBase = () => {
         if (user) {
           state.user.email = user.email
           state.user.uid = user.uid
-          state.user.isAuth = true
+          state.user.isAuthenticated = true
           getNameAndSurname(state.user.uid)
-          resolve(state.user.isAuth)
-        } else reject(state.user.isAuth)
+          resolve(state.user.isAuthenticated)
+        } else reject(state.user.isAuthenticated)
       })
     })
       .then(() => {
@@ -203,7 +208,7 @@ export const useFireBase: () => FireBase = () => {
     signOut(auth).then(() => {
       state.user.email = ''
       state.user.uid = ''
-      state.user.isAuth = false
+      state.user.isAuthenticated = false
       state.user.name = ''
       state.user.surname = ''
     })
