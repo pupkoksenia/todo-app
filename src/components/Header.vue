@@ -32,11 +32,11 @@ export default defineComponent({
     ModalWindow,
   },
   setup() {
-    const { LogOutFirebase, state } = useFireBase()
+    const { logOutFirebase, state } = useFireBase()
     const router = useRouter()
     const modalWindowIsOpen = ref()
     const logOut = () => {
-      LogOutFirebase()
+      logOutFirebase()
       router.push({ path: '/sign-in' })
     }
     onMounted(() => (modalWindowIsOpen.value = false))
