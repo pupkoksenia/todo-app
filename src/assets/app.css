@@ -21,4 +21,7 @@
     .loader-page {
         @apply bg-gradient-to-t from-purple-900 h-screen;
     }
+    .loader-ring {
+        @apply flex items-center justify-center h-screen w-screen after:block after:w-16 after:h-16 after:m-2 after:rounded-3xl after:border-4 after:border-cyan-600 after:animate-spin;
+    }
 } ;
