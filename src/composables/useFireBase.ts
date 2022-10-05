@@ -10,7 +10,13 @@ import {
 import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore'
 import { db } from '../main'
 import { readonly, reactive, DeepReadonly } from 'vue'
-import { AUTH_SUCCESS } from '../constants/index'
+import {
+  AUTH_SUCCESS,
+  INVALID_EMAIL,
+  ACCOUNT_NOT_FOUND,
+  INCORRECT_PASSWORD,
+  INCORRECT_PASSWORD_EMAIL,
+} from '../constants/index'
 export interface State {
   user: {
     email: string | null
@@ -65,13 +71,13 @@ export const useFireBase: () => FireBase = () => {
       .catch((error) => {
         switch (error.code) {
           case 'auth/invalid-email':
-            return 'Invalid email'
+            return INVALID_EMAIL
           case 'auth/user-not-found':
-            return 'No account with that email was found'
+            return ACCOUNT_NOT_FOUND
           case 'auth/wrong-password':
-            return 'Incorrect password'
+            return INCORRECT_PASSWORD
           default:
-            return 'Email or password was incorrect'
+            return INCORRECT_PASSWORD_EMAIL
         }
       })
 
@@ -87,13 +93,13 @@ export const useFireBase: () => FireBase = () => {
       .catch((error) => {
         switch (error.code) {
           case 'auth/invalid-email':
-            return 'Invalid email'
+            return INVALID_EMAIL
           case 'auth/user-not-found':
-            return 'No account with that email was found'
+            return ACCOUNT_NOT_FOUND
           case 'auth/wrong-password':
-            return 'Incorrect password'
+            return INCORRECT_PASSWORD
           default:
-            return 'Email or password was incorrect'
+            return INCORRECT_PASSWORD_EMAIL
         }
       })
 
@@ -130,7 +136,7 @@ export const useFireBase: () => FireBase = () => {
       .catch((error) => {
         switch (error.code) {
           case 'auth/invalid-email':
-            return 'Invalid email'
+            return INVALID_EMAIL
         }
       })
 
@@ -166,13 +172,13 @@ export const useFireBase: () => FireBase = () => {
       .catch((error) => {
         switch (error.code) {
           case 'auth/invalid-email':
-            return 'Invalid email'
+            return INVALID_EMAIL
           case 'auth/user-not-found':
-            return 'No account with that email was found'
+            return ACCOUNT_NOT_FOUND
           case 'auth/wrong-password':
-            return 'Incorrect password'
+            return INCORRECT_PASSWORD
           default:
-            return 'Email or password was incorrect'
+            return INCORRECT_PASSWORD_EMAIL
         }
       })
 
