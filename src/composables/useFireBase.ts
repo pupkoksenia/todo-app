@@ -182,15 +182,10 @@ export const useFireBase: () => FireBase = () => {
           resolve(state.user.isAuth)
         } else resolve(state.user.isAuth)
       })
-      reject()
+    }).then((result) => {
+      if (result) return { path: '/' }
+      else return { path: '/sign-in' }
     })
-      .then((result) => {
-        if (result) return { path: '/' }
-        else return { path: '/sign-in' }
-      })
-      .catch(() => {
-        return { path: '/sign-in' }
-      })
 
   const getNameAndSurname = (id: string) => {
     getDoc(doc(db, 'users', id)).then((data) => {
