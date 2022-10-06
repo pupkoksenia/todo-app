@@ -10,6 +10,7 @@ import {
 import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore'
 import { db } from '../main'
 import { readonly, reactive, DeepReadonly } from 'vue'
+import { Board } from '../types/index'
 import {
   AUTH_SUCCESS,
   INVALID_EMAIL,
@@ -24,16 +25,18 @@ export interface State {
     isAuthenticated: boolean
     name: string
     surname: string
+    userBoards: Board[]
   }
 }
 
-const state = reactive<State>({
+export const state = reactive<State>({
   user: {
     email: '',
     uid: '',
     isAuthenticated: false,
     name: '',
     surname: '',
+    userBoards: [],
   },
 })
 
