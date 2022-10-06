@@ -25,7 +25,6 @@ export interface State {
     isAuthenticated: boolean
     name: string
     surname: string
-    userBoards: Board[]
   }
 }
 
@@ -36,7 +35,6 @@ export const state = reactive<State>({
     isAuthenticated: false,
     name: '',
     surname: '',
-    userBoards: [],
   },
 })
 
