@@ -16,7 +16,7 @@ export default defineComponent({
   },
   setup() {
     const { getBoards, getUserBoards } = useFireBaseBoards()
-    getBoards().then(() => console.log(getUserBoards.value))
+    getBoards().then(() => getUserBoards.value)
   },
 })
 </script>
