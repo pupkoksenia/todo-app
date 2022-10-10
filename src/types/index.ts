@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase/firestore'
 
 export interface Task {
-  idTask: number
+  idTask: string
   title: string
   description: string
   creator: string

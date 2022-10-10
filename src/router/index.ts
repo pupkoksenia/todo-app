@@ -10,6 +10,13 @@ const routes: Array<RouteRecordRaw> = [
     meta: { auth: true },
   },
   {
+    path: '/board/:id',
+    name: 'board',
+    props: true,
+    component: () => import('../components/DragAndDrop.vue'),
+    meta: { auth: true },
+  },
+  {
     path: '/loader',
     component: () => import('../pages/LoaderPage.vue'),
   },

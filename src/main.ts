@@ -4,7 +4,8 @@ import router from './router'
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { createFirebaseConfig } from './composables/createFireBaseConfig'
-import { useFireBase } from '../src/composables/useFireBase'
+import { useFireBase } from './composables/useFireBase'
+import { useFireBaseBoards } from './composables/useFireBaseBoards'
 import '../src/assets/app.css'
 
 createApp(App).use(router).mount('#app')
@@ -20,3 +21,5 @@ router.push('/loader').finally(() => {
       router.push(path)
     })
 })
+
+useFireBaseBoards().getUserBoards()
