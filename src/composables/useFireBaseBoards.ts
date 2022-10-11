@@ -1,9 +1,9 @@
-import { reactive, DeepReadonly, readonly, computed, ComputedRef } from 'vue'
-import { Timestamp } from 'firebase/firestore'
-import { Board, UserRoleBoard } from '../types/index'
-import { collection, getDocs } from 'firebase/firestore'
+import { reactive, DeepReadonly, readonly, Ref } from 'vue'
+import { Board } from '../types/index'
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 import { db } from '../main'
-import { state } from './useFireBase'
+import { state } from '../composables/useFireBase'
+
 interface UserBoards {
   userDataBoards: Array<{ idBoard: number; board: Board }>
 }
@@ -14,27 +14,56 @@ const boards = reactive<UserBoards>({
 export interface fireBaseBoards {
   boards: DeepReadonly<typeof boards>
   getUserBoards: () => Promise<void>
+  updateUserBoard: (idBoard: number, board: Board) => void
+  createUserBoard: (
+    form: Ref<{
+      name: string
+      description: string
+    }>
+  ) => void
 }
 
 export const useFireBaseBoards: () => fireBaseBoards = () => {
   const getUserBoards = () =>
     getDocs(collection(db, 'boards')).then((boardsDb) => {
+      boards.userDataBoards = []
       boardsDb.forEach((boardDb) => {
-        if (
-          boardDb.data().users.filter((user: UserRoleBoard) => user.uid === state.user.uid) &&
-          boards.userDataBoards?.find((elem) => elem.board.idBoard === boardDb.data().idBoard) === undefined
-        ) {
-          const templateBoard = {
-            idBoard: boardDb.data().idBoard,
-            name: boardDb.data().name,
-            description: boardDb.data().description,
-            users: boardDb.data().users,
-            fields: boardDb.data().fields,
-          }
-          boards.userDataBoards.push({ idBoard: boardDb.data().idBoard, board: templateBoard })
+        const templateBoard = {
+          idBoard: boardDb.data().idBoard,
+          name: boardDb.data().name,
+          description: boardDb.data().description,
+          users: boardDb.data().users,
+          fields: boardDb.data().fields,
         }
+        boards.userDataBoards.push({ idBoard: boardDb.data().idBoard, board: templateBoard })
       })
     })
 
-  return { boards: readonly(boards), getUserBoards }
+  const updateUserBoard = (idBoard: number, board: Board) => {
+    setDoc(doc(db, 'boards', idBoard.toString()), board)
+  }
+
+  const createUserBoard = (
+    form: Ref<{
+      name: string
+      description: string
+    }>
+  ) => {
+    getDocs(collection(db, 'boards')).then((data) => {
+      const id = data.size
+      setDoc(
+        doc(db, 'boards', id.toString()),
+        {
+          idBoard: id,
+          name: form.value.name,
+          description: form.value.description,
+          users: [{ uid: state.user.uid, role: 'admin' }],
+          fields: [],
+        },
+        { merge: true }
+      )
+    })
+  }
+
+  return { boards: readonly(boards), getUserBoards, updateUserBoard, createUserBoard }
 }

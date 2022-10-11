@@ -13,7 +13,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/board/:id',
     name: 'board',
     props: true,
-    component: () => import('../components/DragAndDrop.vue'),
+    component: () => import('../components/Board.vue'),
     meta: { auth: true },
   },
   {

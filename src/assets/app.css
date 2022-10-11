@@ -51,4 +51,7 @@
     .drag-and-drop-page-three-fields {
         @apply grid grid-cols-3 gap-3 p-2;
     }
+    .button-create-new-board {
+        @apply inline-block rounded-full border border-indigo-600 bg-indigo-600 h-10 w-10 text-white hover:bg-indigo-700 focus:outline-none focus:ring;
+    }
 } ;

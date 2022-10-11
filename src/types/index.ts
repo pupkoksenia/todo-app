@@ -14,7 +14,7 @@ export interface Task {
 export interface Field {
   idField: number
   description: string
-  name: string
+  title: string
   tasks: Task[]
 }
 
