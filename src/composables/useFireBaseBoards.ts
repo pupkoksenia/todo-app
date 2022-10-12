@@ -1,5 +1,5 @@
 import { reactive, DeepReadonly, readonly, Ref } from 'vue'
-import { Board } from '../types/index'
+import { Board, UserRoleBoard } from '../types/index'
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 import { db } from '../main'
 import { state } from '../composables/useFireBase'
@@ -20,7 +20,7 @@ export interface fireBaseBoards {
       name: string
       description: string
     }>
-  ) => void
+  ) => Promise<number>
 }
 
 export const useFireBaseBoards: () => fireBaseBoards = () => {
@@ -28,14 +28,18 @@ export const useFireBaseBoards: () => fireBaseBoards = () => {
     getDocs(collection(db, 'boards')).then((boardsDb) => {
       boards.userDataBoards = []
       boardsDb.forEach((boardDb) => {
-        const templateBoard = {
-          idBoard: boardDb.data().idBoard,
-          name: boardDb.data().name,
-          description: boardDb.data().description,
-          users: boardDb.data().users,
-          fields: boardDb.data().fields,
-        }
-        boards.userDataBoards.push({ idBoard: boardDb.data().idBoard, board: templateBoard })
+        boardDb.data().users.forEach((user: UserRoleBoard) => {
+          if (user.uid === state.user.uid) {
+            const templateBoard = {
+              idBoard: boardDb.data().idBoard,
+              name: boardDb.data().name,
+              description: boardDb.data().description,
+              users: boardDb.data().users,
+              fields: boardDb.data().fields,
+            }
+            boards.userDataBoards.push({ idBoard: boardDb.data().idBoard, board: templateBoard })
+          }
+        })
       })
     })
 
@@ -48,7 +52,7 @@ export const useFireBaseBoards: () => fireBaseBoards = () => {
       name: string
       description: string
     }>
-  ) => {
+  ) =>
     getDocs(collection(db, 'boards')).then((data) => {
       const id = data.size
       setDoc(
@@ -62,8 +66,8 @@ export const useFireBaseBoards: () => fireBaseBoards = () => {
         },
         { merge: true }
       )
+      return id
     })
-  }
 
   return { boards: readonly(boards), getUserBoards, updateUserBoard, createUserBoard }
 }

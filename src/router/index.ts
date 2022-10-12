@@ -17,6 +17,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { auth: true },
   },
   {
+    path: '/create-board',
+    name: 'new-board',
+    component: () => import('../pages/CreateBoardPage.vue'),
+    meta: { auth: true },
+  },
+  {
     path: '/loader',
     component: () => import('../pages/LoaderPage.vue'),
   },

@@ -16,7 +16,7 @@
     />
   </div>
 
-  <div class="drag-and-drop-page-three-fields">
+  <div class="drag-and-drop-page-six-fields">
     <div
       v-for="field in userFields"
       :key="field.idField"
@@ -39,15 +39,15 @@
         />
       </h4>
       <div
-        v-for="task in userTasks.filter((userTask) => userTask.idTask.slice(-1) === field.idField.toString())"
+        v-for="task in userTasks.filter((userTask) => userTask.idFieldRelate === field.idField)"
         :key="task.idTask"
         class="relative block rounded-xl border border-gray-100 p-8 shadow-xl"
-        @dragstart="onDragStart($event, task, field)"
+        @dragstart="onDragStart($event, task)"
         draggable="true"
       >
         <h5 class="mt-4 text-xl font-bold text-gray-900">{{ task.title }}</h5>
         <p class="mt-2 hidden text-sm sm:block">{{ task.description }}</p>
-        <div class="mt-2 hidden text-sm sm:block">
+        <div class="mt-2 hidden text-xs sm:block">
           <p class="font-bold">Assigned to:</p>
           {{ task.assigned }}
         </div>
@@ -56,7 +56,14 @@
           {{ task.priority }}
         </div>
       </div>
+
+      <button class="header-button-sign-in m-2" @click="createTask">
+        <span class="text-sm font-medium"> + </span>
+      </button>
     </div>
+    <button class="header-button-sign-in m-2 h-10 w-10" @click="createField">
+      <span class="text-sm font-medium"> + </span>
+    </button>
   </div>
 </template>
 
@@ -65,7 +72,9 @@ import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
 import { Task, Field } from '../types/index'
 import { onMounted, ref, Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Timestamp } from 'firebase/firestore'
+import { onDragStart } from '../utils/dragAndDrop'
+import { generateIdTask } from '../utils/generateIdTask'
+import { generateBoard } from '../utils/generateBoard'
 
 export default {
   name: 'BoardElement',
@@ -78,7 +87,7 @@ export default {
     const userBoard = JSON.parse(
       JSON.stringify(boards.userDataBoards.filter((userDataBoard) => userDataBoard.idBoard === Number(props.id)))
     )
-    const userFields: Ref<{ idField: number; title: string; description: string; amountOfTasks: number }[]> = ref([])
+    const userFields: Ref<{ idField: number; title: string; description: string }[]> = ref([])
     const userTasks: Ref<Task[]> = ref([])
     const userBoardInfo: Ref<{ name: string; description: string }> = ref({
       name: userBoard[0].board.name,
@@ -92,7 +101,6 @@ export default {
           idField: field.idField,
           title: field.title,
           description: field.description,
-          amountOfTasks: field.tasks.length,
         })
         field.tasks.forEach((task: Task) => {
           userTasks.value.push(task)
@@ -100,45 +108,23 @@ export default {
       })
     })
 
-    const onDragStart = (e: DragEvent, task: Task, field: Field) => {
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = 'move'
-        e.dataTransfer.effectAllowed = 'move'
-        e.dataTransfer.setData('itemId', task.idTask.toString())
-        userFields.value[field.idField].amountOfTasks--
-      }
-    }
     const onDrop = (e: DragEvent, idField: number) => {
       const itemId = e.dataTransfer?.getData('ItemId')
       userTasks.value = userTasks.value.map((task: Task) => {
         if (task.idTask == itemId) {
-          task.idTask = userFields.value[idField].amountOfTasks.toString() + idField
-          userFields.value[idField].amountOfTasks++
+          task.idTask = generateIdTask()
+          task.idFieldRelate = idField
         }
         return task
       })
     }
+
+    const createField = () => {
+      console.log('gggg')
+    }
+
     const goToHomePage = () => {
-      let fields: any[] = []
-      userFields.value.forEach((field) =>
-        fields.push({ idField: Number(field.idField), title: field.title, description: field.description, tasks: [] })
-      )
-
-      for (let i = 0; i < fields.length; i++) {
-        userTasks.value.forEach((task) => {
-          task.createDate = new Timestamp(task.createDate.seconds, task.createDate.nanoseconds)
-          task.updatedDate = new Timestamp(task.updatedDate.seconds, task.updatedDate.nanoseconds)
-          if (task.idTask.slice(-1) === fields[i].idField.toString()) fields[i].tasks.push(task)
-        })
-      }
-
-      const board = {
-        idBoard: Number(props.id),
-        name: userBoardInfo.value.name,
-        description: userBoardInfo.value.description,
-        users: userBoard[0].board.users,
-        fields: fields,
-      }
+      const board = generateBoard(props.id, userFields, userTasks, userBoardInfo, userBoard)
       updateUserBoard(Number(props.id), board)
       router.push('/')
     }
@@ -149,6 +135,7 @@ export default {
       onDragStart,
       goToHomePage,
       userBoardInfo,
+      createField,
     }
   },
 }

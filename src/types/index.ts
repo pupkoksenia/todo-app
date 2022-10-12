@@ -9,6 +9,7 @@ export interface Task {
   updatedDate: Timestamp
   assigned: string
   priority: string
+  idFieldRelate: number
 }
 
 export interface Field {
