@@ -2,7 +2,7 @@
   <div id="board">
     <Loader :isLoading="loadingListener" />
     <div
-      @click="goToBoard(userBoard.idBoard)"
+      @click="goToBoard(userBoard.idBoard.toString())"
       class="relative block rounded-xl border border-gray-100 p-8 shadow-xl"
       v-for="userBoard in userBoards"
       :key="userBoard.idBoard"
