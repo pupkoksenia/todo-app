@@ -1,7 +1,16 @@
 <template>
   <Teleport to="#app-body">
-    <div v-show="isOpen" class="modal-window-template" @click="$emit('closeModalWindow')">
+    <div v-show="isOpen" class="modal-window-template">
       <div class="modal-window">
+        <div class="flex justify-end">
+          <button
+            class="inline-block rounded border border-indigo-600 px-2 py-1 text-sm focus:outline-none focus:ring"
+            @click="$emit('closeModalWindow')"
+          >
+            x
+          </button>
+        </div>
+
         <div>
           <slot name="body"></slot>
         </div>

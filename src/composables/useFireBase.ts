@@ -18,6 +18,7 @@ import {
   INCORRECT_PASSWORD,
   INCORRECT_PASSWORD_EMAIL,
 } from '../constants/index'
+
 export interface State {
   user: {
     email: string | null
@@ -48,9 +49,10 @@ export interface FireBase {
     userName: string
     userSurname: string
   }) => Promise<string | undefined>
-  checkIsAuth: () => Promise<{
+  checkIsAuth: (locationPathname: string) => Promise<{
     path: string
   }>
+  //checkIsAuth: () => Promise<void>
   getNameAndSurname: (id: string) => void
   signOutFirebase: () => void
   registerGoogleFirebase: () => Promise<string>
@@ -183,7 +185,7 @@ export const useFireBase: () => FireBase = () => {
         }
       })
 
-  const checkIsAuth = () =>
+  const checkIsAuth = (locationPathname: string) =>
     new Promise((resolve, reject) => {
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -196,7 +198,7 @@ export const useFireBase: () => FireBase = () => {
       })
     })
       .then(() => {
-        return { path: '/' }
+        return { path: locationPathname }
       })
       .catch(() => {
         return { path: '/sign-in' }

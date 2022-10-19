@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useFireBase } from '../composables/useFireBase'
+import LoaderPage from '../pages/LoaderPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,7 +25,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/loader',
-    component: () => import('../pages/LoaderPage.vue'),
+    name: 'loader',
+    component: LoaderPage,
   },
   {
     path: '/authentification',
@@ -53,7 +55,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requireAuth = to.matched.some((record) => record.meta.auth)
   const { state } = useFireBase()
-
   if (requireAuth && !state.user.isAuthenticated) next({ path: '/sign-in' })
   else next()
 })

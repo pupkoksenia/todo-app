@@ -16,7 +16,7 @@
     />
   </div>
 
-  <div class="drag-and-drop-page-six-fields">
+  <div class="drag-and-drop-page-fields">
     <div
       v-for="field in userFields"
       :key="field.idField"
@@ -45,58 +45,174 @@
         @dragstart="onDragStart($event, task)"
         draggable="true"
       >
-        <h5 class="mt-4 text-xl font-bold text-gray-900">{{ task.title }}</h5>
-        <p class="mt-2 hidden text-sm sm:block">{{ task.description }}</p>
+        <input
+          type="text"
+          class="w-full rounded-lg p-1 text-base mb-2 font-bold text-gray-900 shadow-sm"
+          v-model="task.title"
+        />
+
+        <input
+          type="text"
+          class="w-full rounded-sm p-1 text-sm mb-2 text-gray-900 shadow-sm"
+          v-model="task.description"
+        />
+
         <div class="mt-2 hidden text-xs sm:block">
           <p class="font-bold">Assigned to:</p>
-          {{ task.assigned }}
+          <input
+            type="text"
+            class="w-full rounded-sm p-1 text-sm mb-2 text-gray-900 shadow-sm"
+            v-model="task.assigned"
+          />
         </div>
         <div class="mt-2 hidden text-sm sm:block">
           <p class="font-bold">Task priority:</p>
-          {{ task.priority }}
+          <input
+            type="text"
+            class="w-full rounded-sm p-1 text-sm mb-2 text-gray-900 shadow-sm"
+            v-model="task.priority"
+          />
         </div>
       </div>
 
-      <button class="header-button-sign-in m-2" @click="createTask">
+      <button class="header-button-sign-in m-2" @click="openModalWindowTask(field.idField)">
         <span class="text-sm font-medium"> + </span>
       </button>
+
+      <ModalWindow :isOpen="modalWindowTaskIsOpen" @closeModalWindow="closeModalWindowTask">
+        <template #body>
+          <div class="grid-cols-1 grid-rows-2">
+            <div class="text-sm">
+              Define task title:
+              <input
+                type="text"
+                class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+                v-model="newTask.title"
+              />
+            </div>
+            <div class="text-sm">
+              Define field description:
+              <input
+                type="text"
+                class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+                v-model="newTask.description"
+              />
+            </div>
+            <div class="text-sm">
+              Define priority:
+              <select
+                v-model="newPriority"
+                class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+              >
+                <option
+                  v-for="priority in priorities.titles"
+                  :key="priority"
+                  class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+                >
+                  {{ priority }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </template>
+        <template #footer>
+          <button class="header-button-sign-in m-2" @click="saveNewTaskInfo">Save</button>
+        </template>
+      </ModalWindow>
     </div>
-    <button class="header-button-sign-in m-2 h-10 w-10" @click="createField">
+    <button class="header-button-sign-in m-2 h-10 w-10" @click="openModalWindowField">
       <span class="text-sm font-medium"> + </span>
     </button>
+    <ModalWindow :isOpen="modalWindowFieldIsOpen" @closeModalWindow="closeModalWindowField">
+      <template #body>
+        <div class="grid-cols-1 grid-rows-2">
+          <div class="text-sm">
+            Define field title:
+            <input
+              type="text"
+              class="w-full rounded-lg p-1 text-xl mb-2 font-bold text-gray-900 shadow-sm bg-gray-200 col-span-3"
+              v-model="newField.title"
+            />
+          </div>
+          <div class="text-sm">
+            Define field description:
+            <input
+              type="text"
+              class="w-full rounded-lg p-1 text-xl mb-2 font-bold text-gray-900 shadow-sm bg-gray-200 col-span-3"
+              v-model="newField.description"
+            />
+          </div>
+        </div>
+      </template>
+      <template #footer>
+        <button class="header-button-sign-in m-2" @click="saveNewFieldInfo">Save</button>
+      </template>
+    </ModalWindow>
   </div>
 </template>
 
 <script lang="ts">
 import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
 import { Task, Field } from '../types/index'
-import { onMounted, ref, Ref } from 'vue'
+import { onMounted, ref, Ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { onDragStart } from '../utils/dragAndDrop'
 import { generateIdTask } from '../utils/generateIdTask'
 import { generateBoard } from '../utils/generateBoard'
+import ModalWindow from './ModalWindow.vue'
+import { Timestamp } from 'firebase/firestore'
+import { useFireBase } from '@/composables/useFireBase'
+import { useFireBasePriorities } from '../composables/useFireBasePriorities'
 
 export default {
   name: 'BoardElement',
   props: {
     id: String,
   },
+  components: {
+    ModalWindow,
+  },
   setup(props: any) {
-    const { boards, updateUserBoard } = useFireBaseBoards()
+    const { boards } = useFireBaseBoards()
+    const { state } = useFireBase()
+    const { getPriorities, priorities } = useFireBasePriorities()
 
-    const userBoard = JSON.parse(
-      JSON.stringify(boards.userDataBoards.filter((userDataBoard) => userDataBoard.idBoard === Number(props.id)))
+    const userBoard = computed(() =>
+      JSON.parse(
+        JSON.stringify(boards.userDataBoards.filter((userDataBoard) => userDataBoard.idBoard === Number(props.id)))
+      )
     )
     const userFields: Ref<{ idField: number; title: string; description: string }[]> = ref([])
     const userTasks: Ref<Task[]> = ref([])
     const userBoardInfo: Ref<{ name: string; description: string }> = ref({
-      name: userBoard[0].board.name,
-      description: userBoard[0].board.description,
+      name: userBoard.value[0]?.board.name,
+      description: userBoard.value[0]?.board.description,
     })
     const router = useRouter()
+    const modalWindowFieldIsOpen = ref(false)
+    const modalWindowTaskIsOpen = ref(false)
+    const newField = ref({
+      idField: 0,
+      title: '',
+      description: '',
+    })
+
+    const newTask = ref({
+      idTask: '',
+      title: '',
+      description: '',
+      creator: state.user.uid,
+      createDate: new Timestamp(new Date().getSeconds(), new Date().getMilliseconds()),
+      updatedDate: new Timestamp(new Date().getSeconds(), new Date().getMilliseconds()),
+      assigned: '',
+      priority: '',
+      idFieldRelate: 0,
+    })
+
+    const newPriority = ref('')
 
     onMounted(() => {
-      userBoard[0].board.fields.forEach((field: Field) => {
+      userBoard.value[0]?.board.fields.forEach((field: Field) => {
         userFields.value.push({
           idField: field.idField,
           title: field.title,
@@ -106,6 +222,7 @@ export default {
           userTasks.value.push(task)
         })
       })
+      getPriorities()
     })
 
     const onDrop = (e: DragEvent, idField: number) => {
@@ -119,14 +236,53 @@ export default {
       })
     }
 
-    const createField = () => {
-      console.log('gggg')
+    const openModalWindowTask = (idField: number) => {
+      modalWindowTaskIsOpen.value = true
+      newTask.value.idFieldRelate = idField
+    }
+
+    const openModalWindowField = () => {
+      modalWindowFieldIsOpen.value = true
+    }
+
+    const closeModalWindowField = () => {
+      modalWindowFieldIsOpen.value = false
+    }
+
+    const closeModalWindowTask = () => {
+      modalWindowTaskIsOpen.value = false
+    }
+
+    const saveNewTaskInfo = () => {
+      newTask.value.idTask = generateIdTask()
+      userTasks.value.push(newTask.value)
+      modalWindowTaskIsOpen.value = false
+      newTask.value = {
+        idTask: '',
+        title: '',
+        description: '',
+        creator: state.user.uid,
+        createDate: new Timestamp(new Date().getSeconds(), new Date().getMilliseconds()),
+        updatedDate: new Timestamp(new Date().getSeconds(), new Date().getMilliseconds()),
+        assigned: '',
+        priority: '',
+        idFieldRelate: 0,
+      }
+    }
+
+    const saveNewFieldInfo = () => {
+      newField.value.idField = userFields.value.length
+      userFields.value.push(newField.value)
+      modalWindowFieldIsOpen.value = false
+      newField.value = {
+        idField: 0,
+        title: '',
+        description: '',
+      }
     }
 
     const goToHomePage = () => {
-      const board = generateBoard(props.id, userFields, userTasks, userBoardInfo, userBoard)
-      updateUserBoard(Number(props.id), board)
-      router.push('/')
+      window.location.href = '/'
     }
     return {
       userFields,
@@ -135,7 +291,18 @@ export default {
       onDragStart,
       goToHomePage,
       userBoardInfo,
-      createField,
+      openModalWindowField,
+      closeModalWindowField,
+      modalWindowFieldIsOpen,
+      newField,
+      saveNewFieldInfo,
+      modalWindowTaskIsOpen,
+      closeModalWindowTask,
+      openModalWindowTask,
+      newTask,
+      saveNewTaskInfo,
+      priorities,
+      newPriority,
     }
   },
 }

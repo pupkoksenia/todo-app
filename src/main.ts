@@ -14,9 +14,10 @@ const { firebaseConfig } = createFirebaseConfig()
 
 const firebaseApp = initializeApp(firebaseConfig)
 export const db = getFirestore(firebaseApp)
+const locationPathname = window.location.pathname
 router.push('/loader').finally(() => {
   useFireBase()
-    .checkIsAuth()
+    .checkIsAuth(locationPathname)
     .then((path) => {
       router.push(path)
     })

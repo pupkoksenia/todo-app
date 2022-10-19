@@ -14,7 +14,7 @@ const boards = reactive<UserBoards>({
 export interface fireBaseBoards {
   boards: DeepReadonly<typeof boards>
   getUserBoards: () => Promise<void>
-  updateUserBoard: (idBoard: number, board: Board) => void
+  updateUserBoard: (idBoard: number, board: Board) => Promise<void>
   createUserBoard: (
     form: Ref<{
       name: string
@@ -43,9 +43,7 @@ export const useFireBaseBoards: () => fireBaseBoards = () => {
       })
     })
 
-  const updateUserBoard = (idBoard: number, board: Board) => {
-    setDoc(doc(db, 'boards', idBoard.toString()), board)
-  }
+  const updateUserBoard = (idBoard: number, board: Board) => setDoc(doc(db, 'boards', idBoard.toString()), board)
 
   const createUserBoard = (
     form: Ref<{
