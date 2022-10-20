@@ -53,9 +53,8 @@ const router = createRouter({
   routes,
 })
 
-const { state } = useFireBase()
-
 router.beforeEach((to, from, next) => {
+  const { state } = useFireBase()
   const requireAuth = to.meta.auth
   if (requireAuth && !state.user.isAuthenticated) next({ path: '/sign-in' })
   else next()
