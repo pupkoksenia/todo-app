@@ -50,7 +50,7 @@ export default {
     })
     const userBoards = computed(() => boards.userDataBoards)
     const createNewBoard = () => {
-      router.push('/create-board')
+      router.push('board/create-board')
     }
 
     const goToBoard = (userBoardId: string) => {

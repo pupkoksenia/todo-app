@@ -3,9 +3,15 @@ import { Board, UserRoleBoard } from '../types/index'
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 import { db } from '../main'
 import { state } from '../composables/useFireBase'
+import { Timestamp } from 'firebase/firestore'
+
+interface UserBoard {
+  idBoard: number
+  board: Board
+}
 
 interface UserBoards {
-  userDataBoards: Array<{ idBoard: number; board: Board }>
+  userDataBoards: Array<UserBoard>
 }
 const boards = reactive<UserBoards>({
   userDataBoards: [],
@@ -21,6 +27,36 @@ export interface fireBaseBoards {
       description: string
     }>
   ) => Promise<number>
+  getUserBoardById: (idBoard: number) => Promise<
+    {
+      idBoard: number
+      board: {
+        idBoard: number
+        name: string
+        description: string
+        users: {
+          uid: string
+          role: string
+        }[]
+        fields: {
+          idField: number
+          description: string
+          title: string
+          tasks: {
+            idTask: string
+            title: string
+            description: string
+            creator: string
+            createDate: Timestamp
+            updatedDate: Timestamp
+            assigned: string
+            priority: string
+            idFieldRelate: number
+          }[]
+        }[]
+      }
+    }[]
+  >
 }
 
 export const useFireBaseBoards: () => fireBaseBoards = () => {
@@ -41,6 +77,11 @@ export const useFireBaseBoards: () => fireBaseBoards = () => {
           }
         })
       })
+    })
+
+  const getUserBoardById = (idBoard: number) =>
+    getUserBoards().then(() => {
+      return boards.userDataBoards.filter((userDataBoard) => userDataBoard.idBoard === idBoard)
     })
 
   const updateUserBoard = (idBoard: number, board: Board) => setDoc(doc(db, 'boards', idBoard.toString()), board)
@@ -67,5 +108,5 @@ export const useFireBaseBoards: () => fireBaseBoards = () => {
       return id
     })
 
-  return { boards: readonly(boards), getUserBoards, updateUserBoard, createUserBoard }
+  return { boards: readonly(boards), getUserBoards, updateUserBoard, createUserBoard, getUserBoardById }
 }

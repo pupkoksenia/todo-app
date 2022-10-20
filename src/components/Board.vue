@@ -16,6 +16,8 @@
     />
   </div>
 
+  <Loader :isLoading="loadingListener" />
+
   <div class="drag-and-drop-page-fields">
     <div
       v-for="field in userFields"
@@ -80,7 +82,7 @@
       </button>
 
       <ModalWindow :isOpen="modalWindowTaskIsOpen" @closeModalWindow="closeModalWindowTask">
-        <template #body>
+        <template v-slot: body>
           <div class="grid-cols-1 grid-rows-2">
             <div class="text-sm">
               Define task title:
@@ -115,7 +117,7 @@
             </div>
           </div>
         </template>
-        <template #footer>
+        <template v-slot:footer>
           <button class="header-button-sign-in m-2" @click="saveNewTaskInfo">Save</button>
         </template>
       </ModalWindow>
@@ -124,7 +126,7 @@
       <span class="text-sm font-medium"> + </span>
     </button>
     <ModalWindow :isOpen="modalWindowFieldIsOpen" @closeModalWindow="closeModalWindowField">
-      <template #body>
+      <template v-slot:body>
         <div class="grid-cols-1 grid-rows-2">
           <div class="text-sm">
             Define field title:
@@ -144,7 +146,7 @@
           </div>
         </div>
       </template>
-      <template #footer>
+      <template v-slot:footer>
         <button class="header-button-sign-in m-2" @click="saveNewFieldInfo">Save</button>
       </template>
     </ModalWindow>
@@ -154,8 +156,7 @@
 <script lang="ts">
 import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
 import { Task, Field } from '../types/index'
-import { onMounted, ref, Ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, Ref, computed, reactive } from 'vue'
 import { onDragStart } from '../utils/dragAndDrop'
 import { generateIdTask } from '../utils/generateIdTask'
 import { generateBoard } from '../utils/generateBoard'
@@ -163,7 +164,8 @@ import ModalWindow from './ModalWindow.vue'
 import { Timestamp } from 'firebase/firestore'
 import { useFireBase } from '@/composables/useFireBase'
 import { useFireBasePriorities } from '../composables/useFireBasePriorities'
-
+import Loader from '../components/Loader.vue'
+import { useRouter } from 'vue-router'
 export default {
   name: 'BoardElement',
   props: {
@@ -171,24 +173,15 @@ export default {
   },
   components: {
     ModalWindow,
+    Loader,
   },
   setup(props: any) {
-    const { boards } = useFireBaseBoards()
+    const { getUserBoardById } = useFireBaseBoards()
     const { state } = useFireBase()
     const { getPriorities, priorities } = useFireBasePriorities()
 
-    const userBoard = computed(() =>
-      JSON.parse(
-        JSON.stringify(boards.userDataBoards.filter((userDataBoard) => userDataBoard.idBoard === Number(props.id)))
-      )
-    )
     const userFields: Ref<{ idField: number; title: string; description: string }[]> = ref([])
     const userTasks: Ref<Task[]> = ref([])
-    const userBoardInfo: Ref<{ name: string; description: string }> = ref({
-      name: userBoard.value[0]?.board.name,
-      description: userBoard.value[0]?.board.description,
-    })
-    const router = useRouter()
     const modalWindowFieldIsOpen = ref(false)
     const modalWindowTaskIsOpen = ref(false)
     const newField = ref({
@@ -211,16 +204,31 @@ export default {
 
     const newPriority = ref('')
 
+    const userBoard = ref()
+    const userBoardInfo: Ref<{ name: string; description: string }> = ref({ name: '', description: '' })
+    const loadingListener = ref()
+
     onMounted(() => {
-      userBoard.value[0]?.board.fields.forEach((field: Field) => {
-        userFields.value.push({
-          idField: field.idField,
-          title: field.title,
-          description: field.description,
+      loadingListener.value = true
+      getUserBoardById(Number(props.id)).then((data) => {
+        loadingListener.value = false
+        userBoard.value = JSON.parse(JSON.stringify(data))
+
+        userBoard.value[0]?.board.fields.forEach((field: Field) => {
+          userFields.value.push({
+            idField: field.idField,
+            title: field.title,
+            description: field.description,
+          })
+          field.tasks.forEach((task: Task) => {
+            userTasks.value.push(task)
+          })
         })
-        field.tasks.forEach((task: Task) => {
-          userTasks.value.push(task)
-        })
+
+        userBoardInfo.value = {
+          name: userBoard.value[0].board.name,
+          description: userBoard?.value[0]?.board.description,
+        }
       })
       getPriorities()
     })
@@ -281,15 +289,15 @@ export default {
       }
     }
 
+    const router = useRouter()
     const goToHomePage = () => {
-      window.location.href = '/'
+      router.push({ path: '/' })
     }
     return {
       userFields,
       onDrop,
       userTasks,
       onDragStart,
-      goToHomePage,
       userBoardInfo,
       openModalWindowField,
       closeModalWindowField,
@@ -303,6 +311,8 @@ export default {
       saveNewTaskInfo,
       priorities,
       newPriority,
+      loadingListener,
+      goToHomePage,
     }
   },
 }

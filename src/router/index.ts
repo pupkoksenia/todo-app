@@ -17,8 +17,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../components/Board.vue'),
     meta: { auth: true },
   },
+
   {
-    path: '/create-board',
+    path: '/board/create-board',
     name: 'new-board',
     component: () => import('../pages/CreateBoardPage.vue'),
     meta: { auth: true },
@@ -52,9 +53,10 @@ const router = createRouter({
   routes,
 })
 
+const { state } = useFireBase()
+
 router.beforeEach((to, from, next) => {
-  const requireAuth = to.matched.some((record) => record.meta.auth)
-  const { state } = useFireBase()
+  const requireAuth = to.meta.auth
   if (requireAuth && !state.user.isAuthenticated) next({ path: '/sign-in' })
   else next()
 })

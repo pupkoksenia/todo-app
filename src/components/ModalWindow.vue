@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="#app-body">
+  <Teleport to="#app">
     <div v-show="isOpen" class="modal-window-template">
       <div class="modal-window">
         <div class="flex justify-end">
@@ -21,6 +21,7 @@
       </div>
     </div>
   </Teleport>
+  <div></div>
 </template>
 
 <script lang="ts">
