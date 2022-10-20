@@ -82,7 +82,7 @@
       </button>
 
       <ModalWindow :isOpen="modalWindowTaskIsOpen" @closeModalWindow="closeModalWindowTask">
-        <template v-slot: body>
+        <template #body>
           <div class="grid-cols-1 grid-rows-2">
             <div class="text-sm">
               Define task title:
@@ -117,7 +117,7 @@
             </div>
           </div>
         </template>
-        <template v-slot:footer>
+        <template #footer>
           <button class="header-button-sign-in m-2" @click="saveNewTaskInfo">Save</button>
         </template>
       </ModalWindow>
@@ -126,7 +126,7 @@
       <span class="text-sm font-medium"> + </span>
     </button>
     <ModalWindow :isOpen="modalWindowFieldIsOpen" @closeModalWindow="closeModalWindowField">
-      <template v-slot:body>
+      <template #body>
         <div class="grid-cols-1 grid-rows-2">
           <div class="text-sm">
             Define field title:
@@ -146,7 +146,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:footer>
+      <template #footer>
         <button class="header-button-sign-in m-2" @click="saveNewFieldInfo">Save</button>
       </template>
     </ModalWindow>
