@@ -69,11 +69,18 @@
         </div>
         <div class="mt-2 hidden text-sm sm:block">
           <p class="font-bold">Task priority:</p>
-          <input
-            type="text"
-            class="w-full rounded-sm p-1 text-sm mb-2 text-gray-900 shadow-sm"
+          <select
             v-model="task.priority"
-          />
+            class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+          >
+            <option
+              v-for="priority in priorities.titles"
+              :key="priority"
+              class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+            >
+              {{ priority }}
+            </option>
+          </select>
         </div>
       </div>
 
