@@ -34,7 +34,7 @@ export const generateBoard = (
     idBoard: Number(id),
     name: userBoardInfo.value.name,
     description: userBoardInfo.value.description,
-    users: userBoard[0].board.users,
+    users: userBoard.value[0].board.users,
     fields: fields.value,
   }
   return board

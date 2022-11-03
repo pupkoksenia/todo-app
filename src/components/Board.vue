@@ -156,7 +156,7 @@
 <script lang="ts">
 import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
 import { Task, Field } from '../types/index'
-import { onMounted, ref, Ref, computed, reactive } from 'vue'
+import { onMounted, ref, Ref } from 'vue'
 import { onDragStart } from '../utils/dragAndDrop'
 import { generateIdTask } from '../utils/generateIdTask'
 import { generateBoard } from '../utils/generateBoard'
@@ -166,6 +166,7 @@ import { useFireBase } from '@/composables/useFireBase'
 import { useFireBasePriorities } from '../composables/useFireBasePriorities'
 import Loader from '../components/Loader.vue'
 import { useRouter } from 'vue-router'
+
 export default {
   name: 'BoardElement',
   props: {
@@ -176,7 +177,7 @@ export default {
     Loader,
   },
   setup(props: any) {
-    const { getUserBoardById } = useFireBaseBoards()
+    const { getUserBoardById, updateUserBoard } = useFireBaseBoards()
     const { state } = useFireBase()
     const { getPriorities, priorities } = useFireBasePriorities()
 
@@ -291,6 +292,8 @@ export default {
 
     const router = useRouter()
     const goToHomePage = () => {
+      const newBoard = generateBoard(props.id, userFields, userTasks, userBoardInfo, userBoard)
+      updateUserBoard(Number(props.id), newBoard)
       router.push({ path: '/' })
     }
     return {
