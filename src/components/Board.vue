@@ -15,6 +15,30 @@
       v-model="userBoardInfo.description"
     />
   </div>
+  <button
+    class="ml-2 mt-2 inline-flex items-center justify-center rounded-lg border border-indigo-600 px-5 py-3 text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:bg-indigo-500"
+    type="button"
+    @click="openModalWindowUsers"
+  >
+    <span class="text-sm font-medium"> Choose roles for users </span>
+  </button>
+
+  <ModalWindow :isOpen="modalWindowUsersIsOpen" @closeModalWindow="closeModalWindowUsers">
+    <template #body>
+      <div v-for="user in usersDB" :key="user">
+        {{ user.email }}
+        <select class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3">
+          <option
+            v-for="role in ROLES"
+            :key="role"
+            class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+          >
+            {{ role }}
+          </option>
+        </select>
+      </div>
+    </template>
+  </ModalWindow>
 
   <Loader :isLoading="loadingListener" />
 
@@ -175,6 +199,7 @@ import { useFireBasePriorities } from '../composables/useFireBasePriorities'
 import Loader from '../components/Loader.vue'
 import { useRouter } from 'vue-router'
 import { useFireBaseUsers } from '@/composables/useFireBaseUsers'
+import { ROLES } from '../constants/index'
 export default {
   name: 'BoardElement',
   props: {
@@ -194,6 +219,11 @@ export default {
     const userTasks: Ref<Task[]> = ref([])
     const modalWindowFieldIsOpen = ref(false)
     const modalWindowTaskIsOpen = ref(false)
+    const modalWindowUsersIsOpen = ref(false)
+    const readonlyUsers = ref([])
+    const owners = ref([])
+    const admins = ref([])
+    const choosenRole = ref([])
     const newField = ref({
       idField: 0,
       title: '',
@@ -272,12 +302,20 @@ export default {
       modalWindowFieldIsOpen.value = true
     }
 
+    const openModalWindowUsers = () => {
+      modalWindowUsersIsOpen.value = true
+    }
+
     const closeModalWindowField = () => {
       modalWindowFieldIsOpen.value = false
     }
 
     const closeModalWindowTask = () => {
       modalWindowTaskIsOpen.value = false
+    }
+
+    const closeModalWindowUsers = () => {
+      modalWindowUsersIsOpen.value = false
     }
 
     const saveNewTaskInfo = () => {
@@ -333,6 +371,14 @@ export default {
       loadingListener,
       goToHomePage,
       usersDB,
+      ROLES,
+      modalWindowUsersIsOpen,
+      openModalWindowUsers,
+      closeModalWindowUsers,
+      readonlyUsers,
+      owners,
+      admins,
+      choosenRole,
     }
   },
 }
