@@ -61,11 +61,19 @@
 
         <div class="mt-2 hidden text-xs sm:block">
           <p class="font-bold">Assigned to:</p>
-          <input
-            type="text"
-            class="w-full rounded-sm p-1 text-sm mb-2 text-gray-900 shadow-sm"
+
+          <select
             v-model="task.assigned"
-          />
+            class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+          >
+            <option
+              v-for="user in usersDB"
+              :key="user.uid"
+              class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+            >
+              {{ user.email }}
+            </option>
+          </select>
         </div>
         <div class="mt-2 hidden text-sm sm:block">
           <p class="font-bold">Task priority:</p>
@@ -173,6 +181,7 @@ import { useFireBase } from '@/composables/useFireBase'
 import { useFireBasePriorities } from '../composables/useFireBasePriorities'
 import Loader from '../components/Loader.vue'
 import { useRouter } from 'vue-router'
+import { useFireBaseUsers } from '@/composables/useFireBaseUsers'
 
 export default {
   name: 'BoardElement',
@@ -187,6 +196,7 @@ export default {
     const { getUserBoardById, updateUserBoard } = useFireBaseBoards()
     const { state } = useFireBase()
     const { getPriorities, priorities } = useFireBasePriorities()
+    const { getUsers, users } = useFireBaseUsers()
 
     const userFields: Ref<{ idField: number; title: string; description: string }[]> = ref([])
     const userTasks: Ref<Task[]> = ref([])
@@ -215,6 +225,7 @@ export default {
     const userBoard = ref()
     const userBoardInfo: Ref<{ name: string; description: string }> = ref({ name: '', description: '' })
     const loadingListener = ref()
+    const usersDB = ref()
 
     onMounted(() => {
       loadingListener.value = true
@@ -230,6 +241,14 @@ export default {
           })
           field.tasks.forEach((task: Task) => {
             userTasks.value.push(task)
+            getUsers().then(() => {
+              userTasks.value.forEach((userTask) => {
+                users.data.forEach((user) => {
+                  if (user.uid === userTask.assigned) userTask.assigned = user.email
+                })
+              })
+              usersDB.value = JSON.parse(JSON.stringify(users.data))
+            })
           })
         })
 
@@ -323,6 +342,7 @@ export default {
       newPriority,
       loadingListener,
       goToHomePage,
+      usersDB,
     }
   },
 }
