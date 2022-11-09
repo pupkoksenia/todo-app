@@ -116,6 +116,21 @@
               />
             </div>
             <div class="text-sm">
+              Define who to assign the task:
+              <select
+                v-model="newAssignedUser"
+                class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+              >
+                <option
+                  v-for="user in usersDB"
+                  :key="user.uid"
+                  class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+                >
+                  {{ user.email }}
+                </option>
+              </select>
+            </div>
+            <div class="text-sm">
               Define priority:
               <select
                 v-model="newPriority"
@@ -221,7 +236,7 @@ export default {
     })
 
     const newPriority = ref('')
-
+    const newAssignedUser = ref('')
     const userBoard = ref()
     const userBoardInfo: Ref<{ name: string; description: string }> = ref({ name: '', description: '' })
     const loadingListener = ref()
@@ -290,6 +305,8 @@ export default {
 
     const saveNewTaskInfo = () => {
       newTask.value.idTask = generateIdTask()
+      newTask.value.assigned = newAssignedUser.value
+      newTask.value.priority = newPriority.value
       userTasks.value.push(newTask.value)
       modalWindowTaskIsOpen.value = false
       newTask.value = {
@@ -343,6 +360,7 @@ export default {
       loadingListener,
       goToHomePage,
       usersDB,
+      newAssignedUser,
     }
   },
 }
