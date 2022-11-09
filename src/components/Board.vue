@@ -101,11 +101,18 @@
         </div>
         <div class="mt-2 hidden text-sm sm:block">
           <p class="font-bold">Task priority:</p>
-          <input
-            type="text"
-            class="w-full rounded-sm p-1 text-sm mb-2 text-gray-900 shadow-sm"
+          <select
             v-model="task.priority"
-          />
+            class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+          >
+            <option
+              v-for="priority in priorities.titles"
+              :key="priority"
+              class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+            >
+              {{ priority }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -188,7 +195,7 @@
 <script lang="ts">
 import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
 import { Task, Field } from '../types/index'
-import { onMounted, ref, Ref, computed, reactive } from 'vue'
+import { onMounted, ref, Ref } from 'vue'
 import { onDragStart } from '../utils/dragAndDrop'
 import { generateIdTask } from '../utils/generateIdTask'
 import { generateBoard } from '../utils/generateBoard'
@@ -210,7 +217,7 @@ export default {
     Loader,
   },
   setup(props: any) {
-    const { getUserBoardById } = useFireBaseBoards()
+    const { getUserBoardById, updateUserBoard } = useFireBaseBoards()
     const { state } = useFireBase()
     const { getPriorities, priorities } = useFireBasePriorities()
     const { getUsers, users } = useFireBaseUsers()
@@ -348,6 +355,8 @@ export default {
 
     const router = useRouter()
     const goToHomePage = () => {
+      const newBoard = generateBoard(props.id, userFields, userTasks, userBoardInfo, userBoard)
+      updateUserBoard(Number(props.id), newBoard)
       router.push({ path: '/' })
     }
     return {
