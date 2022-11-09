@@ -2,7 +2,7 @@ import { reactive, DeepReadonly, readonly } from 'vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../main'
 
-interface User {
+export interface User {
   uid: string
   email: string
 }
