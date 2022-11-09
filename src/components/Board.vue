@@ -27,11 +27,15 @@
     <template #body>
       <div v-for="user in usersDB" :key="user">
         {{ user.email }}
-        <select class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3">
+        <select
+          class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+          @change="saveRole(user.uid, $event)"
+        >
           <option
             v-for="role in ROLES"
             :key="role"
             class="w-full rounded-lg p-1 text-sm mb-2 text-gray-900 shadow-sm bg-gray-200 col-span-3"
+            :value="role"
           >
             {{ role }}
           </option>
@@ -194,7 +198,7 @@
 
 <script lang="ts">
 import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
-import { Task, Field } from '../types/index'
+import { Task, Field, UserRoleBoard } from '../types/index'
 import { onMounted, ref, Ref } from 'vue'
 import { onDragStart } from '../utils/dragAndDrop'
 import { generateIdTask } from '../utils/generateIdTask'
@@ -227,10 +231,10 @@ export default {
     const modalWindowFieldIsOpen = ref(false)
     const modalWindowTaskIsOpen = ref(false)
     const modalWindowUsersIsOpen = ref(false)
-    const readonlyUsers = ref([])
-    const owners = ref([])
-    const admins = ref([])
-    const choosenRole = ref([])
+    const usersAndRoles: Ref<UserRoleBoard[]> = ref([])
+    const saveRole = (userUid: string, event: any) => {
+      usersAndRoles.value.push({ uid: userUid, role: event?.target?.value })
+    }
     const newField = ref({
       idField: 0,
       title: '',
@@ -355,7 +359,7 @@ export default {
 
     const router = useRouter()
     const goToHomePage = () => {
-      const newBoard = generateBoard(props.id, userFields, userTasks, userBoardInfo, userBoard)
+      const newBoard = generateBoard(props.id, userFields, userTasks, userBoardInfo, userBoard, usersAndRoles)
       updateUserBoard(Number(props.id), newBoard)
       router.push({ path: '/' })
     }
@@ -384,10 +388,7 @@ export default {
       modalWindowUsersIsOpen,
       openModalWindowUsers,
       closeModalWindowUsers,
-      readonlyUsers,
-      owners,
-      admins,
-      choosenRole,
+      saveRole,
     }
   },
 }

@@ -3,4 +3,4 @@ export const INVALID_EMAIL = 'INVALID EMAIL'
 export const ACCOUNT_NOT_FOUND = 'ACCOUNT NOT FOUND WITH THIS EMAIL'
 export const INCORRECT_PASSWORD = 'INCORRECT PASSWORD'
 export const INCORRECT_PASSWORD_EMAIL = 'INCORRECT PASSWORD OR EMAIL'
-export const ROLES = ['USER', 'ADMIN', 'OWNER']
+export const ROLES = ['user', 'admin', 'owner']
