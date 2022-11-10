@@ -170,7 +170,7 @@
 
 <script lang="ts">
 import { useFireBaseBoards } from '@/composables/useFireBaseBoards'
-import { Task, Field } from '../types/index'
+import { Task, Field, UserRoleBoard } from '../types/index'
 import { onMounted, ref, Ref } from 'vue'
 import { onDragStart } from '../utils/dragAndDrop'
 import { generateIdTask } from '../utils/generateIdTask'
@@ -181,7 +181,8 @@ import { useFireBase } from '@/composables/useFireBase'
 import { useFireBasePriorities } from '../composables/useFireBasePriorities'
 import Loader from '../components/Loader.vue'
 import { useRouter } from 'vue-router'
-import { useFireBaseUsers } from '@/composables/useFireBaseUsers'
+import { useFireBaseUsers, User } from '@/composables/useFireBaseUsers'
+import { uuidv4 } from '@firebase/util'
 
 export default {
   name: 'BoardElement',
@@ -225,7 +226,7 @@ export default {
     const userBoard = ref()
     const userBoardInfo: Ref<{ name: string; description: string }> = ref({ name: '', description: '' })
     const loadingListener = ref()
-    const usersDB = ref()
+    const usersDB: Ref<User[]> = ref([])
 
     onMounted(() => {
       loadingListener.value = true
@@ -247,7 +248,11 @@ export default {
                   if (user.uid === userTask.assigned) userTask.assigned = user.email
                 })
               })
-              usersDB.value = JSON.parse(JSON.stringify(users.data))
+              let userDB: User[] = [{ uid: '0', email: '0' }]
+              userBoard.value[0].board.users.forEach((userAssigned: UserRoleBoard) => {
+                userDB = JSON.parse(JSON.stringify(users.data.filter((user) => user.uid === userAssigned.uid)))
+                if (usersDB.value.find(({ uid }) => userDB[0].uid === uid) === undefined) usersDB.value.push(userDB[0])
+              })
             })
           })
         })
